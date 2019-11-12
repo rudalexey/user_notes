@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title>SpringBoot &amp; React | Notes user manager</title>
+</head>
+<body>
+<div id="rootApp"></div>
+<script src="/app.bundle.js"></script>
+<script th:inline="javascript">
+    window.renderClient();
+</script>
+</body>
+</html>

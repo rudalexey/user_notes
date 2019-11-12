@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: aleksey
+      changes:
+        - createTable:
+            tableName: notes
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: importance
+                  type: varchar(25)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: note_text
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_create
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: aleksey
+      changes:
+        - insert:
+            tableName: notes
+            columns:
+            - column:
+               name: id
+               valueComputed: UUID()
+            - column:
+               name: importance
+               value: "low"
+            - column:
+               name: note_text
+               value: "Сходить в магазин"
+            - column:
+               name: date_create
+               value: now()
+        - insert:
+            tableName: notes
+            columns:
+            - column:
+                name: id
+                valueComputed: UUID()
+            - column:
+                name: importance
+                value: "medium"
+            - column:
+                name: note_text
+                value: "Подготовить план занятий на следующий месяц"
+            - column:
+                name: date_create
+                value: now()
