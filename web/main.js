@@ -2,6 +2,8 @@ import React from 'react'
 import {render} from 'react-dom'
 import {renderToString} from 'react-dom/server'
 import App from './App'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles.css';
 
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined' && typeof document.createElement === 'function') {

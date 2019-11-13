@@ -2,8 +2,10 @@ package ru.sberbank.notes.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.sberbank.notes.service.NoteService;
+import ru.sberbank.notes.utils.Importance;
 
 /**
  * @author Aleksey Rud
@@ -17,8 +19,8 @@ public class NoteController {
 		this.service = service;
 	}
 
-	@GetMapping("/findAll")
-	public ResponseEntity findAll() {
-		return ResponseEntity.ok(service.findAll());
+	@GetMapping("/find")
+	public ResponseEntity findAll(@RequestParam(name = "filter", required = false) String filter, @RequestParam(name = "imp", required = false) Importance imp) {
+		return ResponseEntity.ok(service.findNotesByFilterAndImportance(null, imp));
 	}
 }
