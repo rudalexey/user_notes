@@ -20,8 +20,8 @@ class App extends React.Component {
                 <div className="my-3 p-3 bg-white rounded box-shadow">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                             <form className="form-inline">
-                                <button className="btn btn-outline-secondary" type="button">Добавить</button>
-                                <button className="btn btn-outline-secondary" type="button">Редактировать</button>
+                                <button className="btn btn-outline-secondary mr-right-5" type="button">Добавить</button>
+                                <button className="btn btn-outline-secondary mr-right-5" type="button">Редактировать</button>
                                 <button className="btn btn-sm btn-outline-warning" type="button">Удалить</button>
                             </form>
                             <div className="col"/>
@@ -34,10 +34,10 @@ class App extends React.Component {
                 <div className="my-3 p-3 bg-white rounded box-shadow">
                     <h6 className="border-bottom border-gray pb-2 mb-0">Список всех заметок</h6>
                     <div className="media text-muted pt-3">
-                        <img alt="32x32" src="kv.svg"
+                        <img alt="32x32" src="high.svg"
                              className="mr-2 rounded" style={{width: "32px", height: "32px"}}
                                data-holder-rendered="true"/>
-                        <div className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                        <div className="media-body pb-3 mb-0 small border-bottom">
                             <div className="d-flex justify-content-between align-items-center w-100">
                                 <strong className="text-gray-dark">Важное</strong>
                                 <a href="#">Подробнее</a>
