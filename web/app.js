@@ -1,57 +1,112 @@
-import React from 'react'
+import React, {Component} from 'react';
+import NoteList from './note/NoteList'
 
-class App extends React.Component {
+class App extends Component {
+
     constructor(props) {
         super(props);
-        console.log(props)
+        this.searchEvent = this.searchEvent.bind(this);
+        this.addOrEditEvent = this.addOrEditEvent.bind(this);
     }
-    // #19bb4f
+
+    state = {
+        filter: '',
+        notes: []
+    };
+
+    componentDidMount() {
+        fetch('find')
+            .then(res => res.json())
+            .then((data) => {
+                this.setState({notes: data})
+            })
+            .catch(console.log)
+    }
+
     render() {
+
         return (
             <main role="main" className="container">
-                <div className="d-flex align-items-center p-3 my-3 bg-sber text-black-50 rounded" >
+                <div className="d-flex align-items-center p-3 my-3 bg-sber text-black-50 rounded">
                     <img className="mr-3" src="bootstrap-outline.svg"
-                         alt="" width="48" height="48" />
-                        <div className="lh-100">
-                            <h6 className="mb-0 text-dark lh-100" >База личных заметок</h6>
-                            <small>Copyright (c) 2019 The Bootstrap style</small>
-                        </div>
+                         alt="" width="48" height="48"/>
+                    <div className="lh-100">
+                        <h6 className="mb-0 text-dark lh-100">База личных заметок</h6>
+                        <small>Copyright (c) 2019 The Bootstrap style</small>
+                    </div>
                 </div>
                 <div className="my-3 p-3 bg-white rounded box-shadow">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                            <form className="form-inline">
-                                <button className="btn btn-outline-secondary mr-right-5" type="button">Добавить</button>
-                                <button className="btn btn-outline-secondary mr-right-5" type="button">Редактировать</button>
-                                <button className="btn btn-sm btn-outline-warning" type="button">Удалить</button>
-                            </form>
-                            <div className="col"/>
-                            <form className="form-inline my-2 my-lg-0">
-                                <input className="form-control mr-sm-2" type="search" placeholder="Поиск..."/>
-                                    <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Искать</button>
-                            </form>
+                        <form className="form-inline">
+                            <button className="btn btn-outline-secondary mr-right-5" type="button"
+                                    onClick={this.addOrEditEvent}>Добавить
+                            </button>
+                            <button className="btn btn-outline-secondary mr-right-5" disabled type="button"
+                                    onClick={this.addOrEditEvent}>Редактировать
+                            </button>
+                            <button className="btn btn-sm btn-outline-warning" disabled type="button"
+                                    onClick={this.deleteEvent}>Удалить
+                            </button>
+                        </form>
+                        <div className="col"/>
+                        <form className="form-inline my-2 my-lg-0">
+                            <input className="form-control mr-sm-2" value={this.state.filter} type="search"
+                                   onChange={this.searchEvent} placeholder="Поиск..."/>
+                        </form>
                     </nav>
                 </div>
-                <div className="my-3 p-3 bg-white rounded box-shadow">
-                    <h6 className="border-bottom border-gray pb-2 mb-0">Список всех заметок</h6>
-                    <div className="media text-muted pt-3">
-                        <img alt="32x32" src="high.svg"
-                             className="mr-2 rounded" style={{width: "32px", height: "32px"}}
-                               data-holder-rendered="true"/>
-                        <div className="media-body pb-3 mb-0 small border-bottom">
-                            <div className="d-flex justify-content-between align-items-center w-100">
-                                <strong className="text-gray-dark">Важное</strong>
-                                <a href="#">Подробнее</a>
-                            </div>
-                            <span className="d-block">15 января 2019</span>
-                        </div>
-                    </div>
-                    <small className="d-block text-right mt-3">
-                        <a href="#">Обновить</a>
-                    </small>
-                </div>
+                <NoteList notes={this.state.notes}/>
+
             </main>
 
         );
+    }
+
+    searchEvent(e) {
+        this.setState({filter: e.target.value});
+        fetch('find?filter=' + e.target.value)
+            .then(res => res.json())
+            .then((data) => {
+                this.setState({notes: data});
+            })
+            .catch(console.log)
+    }
+
+    addOrEditEvent(e) {
+        console.log("add", e);
+        let note = {
+            importance: "low",
+            title: "Test",
+            text: "test2222"
+        };
+        fetch('addOrEdit', {
+            method: 'post',
+            body: JSON.stringify(note),
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(res => res.json())
+            .then((data) => {
+                let newData;
+                if (note.id) {
+
+                } else {
+                    newData = this.state.notes.add(data);
+                }
+                this.setState({notes: newData});
+            })
+            .catch(console.log)
+    }
+
+
+    deleteEvent(e) {
+        console.log("delete", e);
+        fetch('delete', {method: 'DELETE', body: e.id})
+            .then(res => res.json())
+            .then((data) => {
+                delete this.state.data[e.id]
+                // this.setState({ notes: data });
+            })
+            .catch(console.log)
     }
 }
 

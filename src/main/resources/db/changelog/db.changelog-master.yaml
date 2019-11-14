@@ -18,6 +18,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: note_text
                   type: varchar(255)
                   constraints:
@@ -42,8 +47,11 @@ databaseChangeLog:
                name: importance
                value: "low"
             - column:
+                name: title
+                value: "Курсы подготовки"
+            - column:
                name: note_text
-               value: "Сходить в магазин"
+               value: "Необходимо в декабре продлить договор по оказанию проф подготовки новых сотрудников компании"
             - column:
                name: date_create
                value: now()
@@ -57,8 +65,29 @@ databaseChangeLog:
                 name: importance
                 value: "medium"
             - column:
+                name: title
+                value: "Отчет о продажах"
+            - column:
                 name: note_text
-                value: "Подготовить план занятий на следующий месяц"
+                value: "Подготовить отчет по продажам для учредителей как еще один аргумет в пользу новых инвестиций"
             - column:
                 name: date_create
                 value: now()
+        - insert:
+            tableName: notes
+            columns:
+              - column:
+                  name: id
+                  valueComputed: UUID()
+              - column:
+                  name: importance
+                  value: "high"
+              - column:
+                  name: title
+                  value: "Задание"
+              - column:
+                  name: note_text
+                  value: "До 25 ноября необходимо закончить проект тестового задания"
+              - column:
+                  name: date_create
+                  value: now()

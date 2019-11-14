@@ -1,5 +1,9 @@
 package ru.sberbank.notes.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.sberbank.notes.utils.Importance;
 
 import javax.persistence.*;
@@ -15,28 +19,36 @@ import java.util.UUID;
 public class Note {
 	@Id
 	@Column
-	private  UUID id;
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID",strategy = "org.hibernate.id.UUIDGenerator")
+	private UUID id;
 	@Column
 	@Enumerated(EnumType.STRING)
 	private Importance importance;
+	@Column(name = "title")
+	private String title;
 	@Column(name = "note_text")
 	private String text;
 	@Column(name = "date_create")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMMM yyyy HH:mm",locale = "ru")
+	@CreationTimestamp
 	private LocalDateTime dateCreate;
 
 	public Note() {
 	}
 
-	public Note(Importance importance, String text) {
-		this.id=UUID.randomUUID();
+	public Note(Importance importance, String title, String text) {
+		this.id = UUID.randomUUID();
 		this.importance = importance;
+		this.title = title;
 		this.text = text;
-		this.dateCreate=LocalDateTime.now();
+		this.dateCreate = LocalDateTime.now();
 	}
 
-	public Note(UUID id, Importance importance, String text, LocalDateTime dateCreate) {
+	public Note(UUID id, Importance importance, String title, String text, LocalDateTime dateCreate) {
 		this.id = id;
 		this.importance = importance;
+		this.title = title;
 		this.text = text;
 		this.dateCreate = dateCreate;
 	}
@@ -55,6 +67,14 @@ public class Note {
 
 	public void setImportance(Importance importance) {
 		this.importance = importance;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getText() {
@@ -80,12 +100,13 @@ public class Note {
 		Note note = (Note) o;
 		return Objects.equals(id, note.id) &&
 				importance == note.importance &&
+				Objects.equals(title, note.title) &&
 				Objects.equals(text, note.text) &&
 				Objects.equals(dateCreate, note.dateCreate);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, importance, text, dateCreate);
+		return Objects.hash(id, importance, title, text, dateCreate);
 	}
 }

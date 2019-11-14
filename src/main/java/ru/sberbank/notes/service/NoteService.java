@@ -5,9 +5,9 @@ import ru.sberbank.notes.entity.Note;
 import ru.sberbank.notes.repository.NoteRepository;
 import ru.sberbank.notes.utils.Importance;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Aleksey Rud
@@ -32,6 +32,10 @@ public class NoteService {
 		} else if (Objects.isNull(filter)) {
 			return noteRepository.getAllByImportance(importance);
 		}
-			return noteRepository.getAllByTextContainsIgnoreCaseAndImportance(filter, importance);
+		return noteRepository.getAllByTextContainsIgnoreCaseAndImportance(filter, importance);
+	}
+
+	public void delete(UUID id) {
+		noteRepository.deleteById(id);
 	}
 }

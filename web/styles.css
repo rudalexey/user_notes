@@ -4,3 +4,7 @@ background-color: #19bb4f;
 .mr-right-5{
     margin-right: 5px;
 }
+.note:hover {
+    background: rgba(27, 27, 27, 0.13);
+}
+
