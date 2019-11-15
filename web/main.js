@@ -1,21 +1,18 @@
 import React from 'react'
-import {render} from 'react-dom'
+import ReactDOM from 'react-dom';
 import App from './App'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles.css';
 
+ReactDOM.render(<App />, document.getElementById('rootApp'));
 
-if (typeof window !== 'undefined' && typeof document !== 'undefined' && typeof document.createElement === 'function') {
-    window.renderClient = () => {
-        render(
-            <App/>,
-            document.getElementById('rootApp')
-        );
+export function isEmpty(obj) {
+    if (obj == null) return true;
+    if (obj.length > 0)    return false;
+    if (obj.length === 0)  return true;
+    if (typeof obj !== "object") return true;
+    for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
     }
-} else {
-    global.renderServer = () => {
-        return renderToString(
-            <App/>
-        )
-    };
+    return true;
 }

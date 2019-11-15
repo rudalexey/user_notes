@@ -30,8 +30,8 @@ public class NoteController {
 		return ResponseEntity.ok(service.addOrEditNote(note));
 	}
 	@DeleteMapping("/delete")
-	public ResponseEntity edit(@RequestBody UUID id) {
-		service.delete(id);
+	public ResponseEntity edit(@RequestBody String id) {
+		service.delete(UUID.fromString(id));
 		return ResponseEntity.ok().build();
 	}
 }

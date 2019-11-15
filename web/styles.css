@@ -8,3 +8,6 @@ background-color: #19bb4f;
     background: rgba(27, 27, 27, 0.13);
 }
 
+.selected {
+    background: rgba(27, 27, 27, 0.13);
+}

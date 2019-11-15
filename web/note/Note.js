@@ -22,18 +22,12 @@ const imp = {
 class Note extends React.Component {
     constructor(props) {
         super(props);
-        this.handleClick=this.handleClick.bind(this)
     }
-    state= {
-        isSelect:false
-    }
-    handleClick(e) {
-        this.setState({isSelect:!this.state.isSelect})
-    }
+
 
     render() {
         return (
-            <div className="media text-muted pt-3 note" onClick={this.handleClick}>
+            <div className={this.props.isSelect ? 'media text-muted pt-3 note selected': 'media text-muted pt-3 note'}  onClick={()=>{this.props.selectNote(this.props.note)}}>
                 <img alt={this.props.note.importance} src={imp[this.props.note.importance].img}
                      title={imp[this.props.note.importance].text}
                      className="mr-2 rounded" style={{width: "32px", height: "32px"}}

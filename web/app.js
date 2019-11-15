@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import NoteList from './note/NoteList'
+import {isEmpty} from "./main";
+import {Button, Modal} from "react-bootstrap";
 
 class App extends Component {
 
@@ -7,20 +9,23 @@ class App extends Component {
         super(props);
         this.searchEvent = this.searchEvent.bind(this);
         this.addOrEditEvent = this.addOrEditEvent.bind(this);
+        this.deleteEvent = this.deleteEvent.bind(this);
+        this.setShow = this.setShow.bind(this);
     }
 
     state = {
         filter: '',
-        notes: []
+        notes: [],
+        selectNote: {},
+        editNote:{},
+        modal:{
+            show:false,
+            add: true
+        }
     };
 
     componentDidMount() {
-        fetch('find')
-            .then(res => res.json())
-            .then((data) => {
-                this.setState({notes: data})
-            })
-            .catch(console.log)
+        this.searchEvent()
     }
 
     render() {
@@ -39,14 +44,67 @@ class App extends Component {
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <form className="form-inline">
                             <button className="btn btn-outline-secondary mr-right-5" type="button"
-                                    onClick={this.addOrEditEvent}>Добавить
+                                    onClick={()=>this.setShow(true,true)}>Добавить
                             </button>
-                            <button className="btn btn-outline-secondary mr-right-5" disabled type="button"
-                                    onClick={this.addOrEditEvent}>Редактировать
+                            <button
+                                className="btn btn-outline-secondary mr-right-5" {...isEmpty(this.state.selectNote) ? {disabled: true} : {}}
+                                type="button"
+                                onClick={()=>this.setShow(true,false)}>Редактировать
                             </button>
-                            <button className="btn btn-sm btn-outline-warning" disabled type="button"
-                                    onClick={this.deleteEvent}>Удалить
+                            <button
+                                className="btn btn-sm btn-outline-warning" {...isEmpty(this.state.selectNote) ? {disabled: true} : {}}
+                                type="button"
+                                onClick={this.deleteEvent}>Удалить
                             </button>
+                            <Modal show={this.state.modal.show} onHide={()=>this.setShow(false)}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>{this.state.modal.add?'Добавить':"Редактировать" } заметку</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <form id="formNoteId">
+                                        <div className="form-group">
+                                            <label htmlFor="formTitleID">Заголовок</label>
+                                            <input type="text" value={this.state.editNote.title} required className="form-control" id="formTitleID"
+                                                   onChange={e => {
+                                                       this.state.editNote.title=e.target.value;
+                                                       this.setState({ editNote:this.state.editNote});
+                                                   }}
+                                                   placeholder="краткое описание заметки"/>
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="formControlSelect1">Важность</label>
+                                            <select value={this.state.editNote.importance}
+                                                    onChange={e => {
+                                                        this.state.editNote.importance=e.target.value;
+                                                        this.setState({ editNote:this.state.editNote});
+                                                    }}
+                                                    required className="form-control" id="formControlSelect1">
+                                                <option selected value="low">Низкая</option>
+                                                <option value="medium">Средняя</option>
+                                                <option value="high">Высокая</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="formTextId">Описание заметки</label>
+                                            <textarea value={this.state.editNote.text}
+                                                      onChange={e => {
+                                                          this.state.editNote.text=e.target.value;
+                                                          this.setState({ editNote:this.state.editNote});
+                                                      }}
+                                                      required className="form-control" id="formTextId"
+                                                      rows="3"/>
+                                        </div>
+                                    </form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={()=>this.setShow(false)}>
+                                        Закрыть
+                                    </Button>
+                                    <Button variant="primary" onClick={this.addOrEditEvent}>
+                                        Сохранить
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
                         </form>
                         <div className="col"/>
                         <form className="form-inline my-2 my-lg-0">
@@ -55,16 +113,57 @@ class App extends Component {
                         </form>
                     </nav>
                 </div>
-                <NoteList notes={this.state.notes}/>
-
+                <NoteList notes={this.state.notes} updateData={() => {
+                    this.updateData()
+                }} select={(note) => {
+                    this.setState({selectNote: note})
+                }}/>
             </main>
 
         );
     }
 
     searchEvent(e) {
-        this.setState({filter: e.target.value});
-        fetch('find?filter=' + e.target.value)
+        let value = e ? e.target.value : '';
+        this.setState({filter: value}, () => this.updateData())
+
+    }
+
+    addOrEditEvent(e) {
+        if(isEmpty(this.state.editNote)) return;
+        if(isEmpty(this.state.editNote.importance))this.state.editNote.importance='low';
+        fetch('addOrEdit', {
+            method: 'post',
+            body: JSON.stringify(this.state.editNote),
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(res => res.json())
+            .then((data) => {
+                let newData=this.state.notes;
+                if (this.state.editNote.id) {
+                } else {
+                    newData.push(data);
+                }
+                this.setState({notes: newData},()=>this.setShow(false,false));
+            })
+            .catch(console.log)
+    }
+
+
+    deleteEvent() {
+        let id = this.state.selectNote.id;
+        console.log("delete", id);
+        fetch('delete', {method: 'DELETE', body: id})
+            .then(() => {
+                this.setState(this.state.notes = this.state.notes.filter((value) => {
+                    return value.id !== id;
+                }))
+            })
+            .catch(console.log)
+    }
+
+    updateData() {
+        fetch('find?filter=' + this.state.filter)
             .then(res => res.json())
             .then((data) => {
                 this.setState({notes: data});
@@ -72,41 +171,14 @@ class App extends Component {
             .catch(console.log)
     }
 
-    addOrEditEvent(e) {
-        console.log("add", e);
-        let note = {
-            importance: "low",
-            title: "Test",
-            text: "test2222"
-        };
-        fetch('addOrEdit', {
-            method: 'post',
-            body: JSON.stringify(note),
-            headers: {'Content-Type': 'application/json'}
-        })
-            .then(res => res.json())
-            .then((data) => {
-                let newData;
-                if (note.id) {
-
-                } else {
-                    newData = this.state.notes.add(data);
-                }
-                this.setState({notes: newData});
-            })
-            .catch(console.log)
-    }
-
-
-    deleteEvent(e) {
-        console.log("delete", e);
-        fetch('delete', {method: 'DELETE', body: e.id})
-            .then(res => res.json())
-            .then((data) => {
-                delete this.state.data[e.id]
-                // this.setState({ notes: data });
-            })
-            .catch(console.log)
+    setShow(show,add) {
+        this.state.modal.show=show;
+        this.state.modal.add=add;
+        if(this.state.modal.add){
+            this.setState({modal:this.state.modal,editNote:{}});
+        } else {
+            this.setState({modal:this.state.modal,editNote:this.state.selectNote});
+        }
     }
 }
 
